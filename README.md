@@ -1,104 +1,39 @@
-# テレグラムGASアシスタントボット
+# Bot Project
 
-このリポジトリには、Google Apps Script（GAS）を使用してタスクを実行するためのテレグラムボットが含まれています。
+This is a bot project that integrates with various services.
 
-## 機能
+## Features
 
-- 自然言語でGASコードを生成
-- 生成したコードをGoogle Apps Scriptで実行
-- 実行結果の表示と分析
-- レポート生成機能
+- Line Bot Integration
+- Agent Manager
+- Intent Analysis
+- Supabase Database Integration
+- Devin API Integration
+- Telegram GAS Assistant Integration
 
-## セットアップ手順
+## Setup
 
-### 前提条件
+1. Clone the repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Configure environment variables in `.env` (see `.env.example` for required variables)
+4. Run the application: `python app/main.py`
 
-- Python 3.8以上
-- Google Apps Scriptのデプロイ済みWebアプリケーション
-- Telegramボットトークン
+## Project Structure
 
-### インストール
+- `app/` - Main application code
+  - `agent/` - Agent management and intent analysis
+  - `database/` - Database integration
+  - `devin_integration/` - Devin API integration
+  - `line_bot/` - Line bot implementation
+  - `main.py` - Application entry point
+- `examples/` - Example implementations
+  - `gas_assistant/` - Telegram GAS Assistant example
+- `test/` - Test files
 
-1. セットアップスクリプトを実行します：
+## Contributing
 
-```bash
-setup.bat
-```
-
-または手動でセットアップする場合：
-
-```bash
-# 仮想環境を作成
-python -m venv venv
-
-# 仮想環境を有効化
-# Windowsの場合
-venv\Scripts\activate
-# macOS/Linuxの場合
-# source venv/bin/activate
-
-# 必要なパッケージをインストール
-pip install -r examples/gas_assistant/requirements.txt
-```
-
-2. 環境変数を設定します：
-
-`.env`ファイルに以下の環境変数が設定されていることを確認してください：
-
-```
-# OpenAI API設定
-OPENAI_API_KEY=your_openai_api_key
-
-# Google Apps Script API設定
-GAS_API_ENDPOINT=your_gas_web_app_url
-GAS_API_KEY=your_gas_api_key
-
-# Telegram Bot設定
-TELEGRAM_TOKEN=your_telegram_bot_token
-```
-
-## 使用方法
-
-### ボットの起動
-
-```bash
-cd examples/gas_assistant
-python telegram_gas_agent.py
-```
-
-### ボットとの対話
-
-1. Telegramアプリでボットを検索します
-2. `/start`コマンドを送信してボットを開始します
-3. GASで実行したいタスクを自然言語で説明します
-4. ボットがGASコードを生成し、実行オプションを提供します
-
-### 利用可能なコマンド
-
-- `/start` - ボットを開始
-- `/help` - ヘルプを表示
-- `/cancel` - 現在の操作をキャンセル
-- `/settings` - 設定を表示
-- `/report` - レポートを表示
-
-## ファイル構成
-
-- `examples/gas_assistant/telegram_gas_agent.py` - メインのテレグラムボットスクリプト
-- `examples/gas_assistant/telegram_integration.py` - テレグラム統合モジュール
-- `examples/gas_assistant/gas_assistant.py` - GASアシスタントコア機能
-- `examples/gas_assistant/gas_report_generator.py` - レポート生成機能
-- `examples/gas_assistant/requirements.txt` - 必要なPythonパッケージ
-
-## トラブルシューティング
-
-### ボットが応答しない場合
-
-1. 環境変数が正しく設定されているか確認してください
-2. ログを確認して、エラーメッセージを確認してください
-3. Telegramボットトークンが有効であることを確認してください
-
-### GASコードの実行エラー
-
-1. GAS APIエンドポイントが正しく設定されているか確認してください
-2. GAS APIキーが正しいか確認してください
-3. GASウェブアプリケーションが正しくデプロイされているか確認してください
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
