@@ -76,6 +76,8 @@ class IntentAnalyzer:
             "analyze", "debug", "fix", "implement", "deploy", "automate"
         ]
         
+        self.use_openai_assistant = os.getenv("USE_OPENAI_ASSISTANT", "False").lower() == "true"
+        
         self._compile_patterns()
         
         logger.info("Intent analyzer initialized")
@@ -111,6 +113,9 @@ class IntentAnalyzer:
             # Determine if Devin API is required
             requires_devin_api = self._requires_devin_api(message_lower)
             
+            # Determine if OpenAI Assistant should be used
+            use_openai_assistant = self.use_openai_assistant
+            
             # Extract parameters if needed
             parameters = self._extract_parameters(message) if requires_devin_api else {}
             
@@ -120,6 +125,7 @@ class IntentAnalyzer:
             intent = {
                 "type": intent_type,
                 "requires_devin_api": requires_devin_api,
+                "use_openai_assistant": use_openai_assistant,
                 "tool_name": tool_name,
                 "parameters": parameters,
                 "raw_message": message

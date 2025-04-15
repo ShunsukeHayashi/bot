@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional, Protocol
 
 from app.agent.intent_analyzer import IntentAnalyzer, get_intent_analyzer
 from app.devin_integration.devin_api import DevinAPI, get_devin_api
+from app.openai_integration.openai_assistant import OpenAIAssistant, get_openai_assistant
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,12 @@ class ToolExecutorProtocol(Protocol):
         """Execute a tool call."""
         ...
 
+class AssistantProtocol(Protocol):
+    """Protocol for assistant components."""
+    def process_message(self, message: str, user_id: str, conversation_state: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a message and return a response."""
+        ...
+
 class AgentManager:
     """
     Agent manager for processing messages and generating responses.
@@ -32,6 +39,7 @@ class AgentManager:
         self, 
         intent_analyzer: Optional[IntentAnalyzerProtocol] = None,
         tool_executor: Optional[ToolExecutorProtocol] = None,
+        assistant: Optional[AssistantProtocol] = None,
         max_context_length: int = 10
     ):
         """
@@ -40,10 +48,12 @@ class AgentManager:
         Args:
             intent_analyzer: Component for analyzing user intent
             tool_executor: Component for executing tools
+            assistant: Component for processing messages with an assistant
             max_context_length: Maximum number of messages to keep in context
         """
         self.intent_analyzer = intent_analyzer or get_intent_analyzer()
         self.tool_executor = tool_executor or get_devin_api()
+        self.assistant = assistant or get_openai_assistant()
         self.max_context_length = max_context_length
         
         logger.info("Agent manager initialized")
@@ -65,6 +75,24 @@ class AgentManager:
             context = self._update_context(conversation_state.get("context", []), message, "user")
             
             intent = self.intent_analyzer.analyze(message, context)
+            
+            if intent.get("use_openai_assistant", False):
+                assistant_response = self.assistant.process_message(message, user_id, conversation_state)
+                
+                # Update context with assistant response
+                response_content = assistant_response.get("message", "")
+                context = self._update_context(context, response_content, "assistant")
+                
+                # Update conversation state
+                updated_state = self._create_updated_state(user_id, context, intent)
+                updated_state.update({
+                    "openai_thread_id": assistant_response.get("conversation_state", {}).get("openai_thread_id")
+                })
+                
+                return {
+                    "message": response_content,
+                    "conversation_state": updated_state
+                }
             
             response_content = self._generate_response(message, user_id, intent, context)
             
