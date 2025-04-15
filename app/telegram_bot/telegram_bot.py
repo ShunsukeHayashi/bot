@@ -3,7 +3,7 @@ import logging
 import json
 from typing import Dict, Any, List, Optional, Protocol
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler as TelegramMessageHandler, filters, ContextTypes, CallbackContext
 from telegram.ext.filters import MessageFilter
 
 from app.agent.agent_manager import get_agent_manager, AgentManager
@@ -11,7 +11,7 @@ from app.database.supabase_client import get_supabase_client, SupabaseClient
 
 logger = logging.getLogger(__name__)
 
-class MessageHandler(Protocol):
+class MessageHandlerProtocol(Protocol):
     """Protocol for message handling components."""
     def process_message(self, message: str, user_id: str, conversation_state: Dict[str, Any]) -> Dict[str, Any]:
         """Process a message and return a response."""
@@ -39,7 +39,7 @@ class TelegramBot:
         self, 
         token: Optional[str] = None,
         webhook_url: Optional[str] = None,
-        message_handler: Optional[MessageHandler] = None,
+        message_handler: Optional[MessageHandlerProtocol] = None,
         database_client: Optional[DatabaseClient] = None
     ):
         """
@@ -84,7 +84,7 @@ class TelegramBot:
         self.application.add_handler(CommandHandler("help", self._handle_help))
         
         # Add message handler for text messages
-        self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self._handle_message))
+        self.application.add_handler(TelegramMessageHandler(filters.TEXT & ~filters.COMMAND, self._handle_message))
         
         logger.info("Telegram bot handlers registered")
     
