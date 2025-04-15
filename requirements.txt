@@ -6,9 +6,10 @@ requests==2.32.3
 supabase==2.13.0
 openai==1.65.4
 pydantic==2.10.6
-langchain==0.2.0  # Optional for RAG if needed
-langchain-openai==0.1.0  # Optional for RAG if needed
-faiss-cpu==1.8.0  # Optional for vector search if needed
+# Commenting out conflicting packages for now as they're optional
+# langchain==0.2.0  # Optional for RAG if needed
+# langchain-openai==0.1.0  # Optional for RAG if needed
+# faiss-cpu==1.8.0  # Optional for vector search if needed
 numpy==1.26.4
 pytest==7.4.0  # For testing
 pytest-asyncio==0.21.1  # For async testing
