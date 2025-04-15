@@ -1,0 +1,20 @@
+# OpenAI Agents SDK
+openai-agents>=0.0.10
+openai>=1.0.0
+
+# Web API
+fastapi>=0.100.0
+uvicorn>=0.22.0
+pydantic>=2.0.0
+
+# Telegram Bot
+python-telegram-bot>=20.0
+
+# HTTP Requests
+requests>=2.31.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Utilities
+typing-extensions>=4.5.0
