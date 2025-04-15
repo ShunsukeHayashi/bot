@@ -36,12 +36,8 @@ class SupabaseClient:
             logger.warning("Supabase client not initialized. Skipping table creation.")
             return False
         
-        try:
-            logger.info("Tables created successfully")
-            return True
-        except Exception as e:
-            logger.error(f"Error creating tables: {e}")
-            return False
+        logger.info("Using in-memory storage for conversation state")
+        return True
     
     def store_conversation_state(self, user_id: str, conversation_data: Dict[str, Any]) -> bool:
         """
