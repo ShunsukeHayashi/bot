@@ -114,7 +114,7 @@ class IntentAnalyzer:
             requires_devin_api = self._requires_devin_api(message_lower)
             
             # Determine if OpenAI Assistant should be used
-            use_openai_assistant = self.use_openai_assistant
+            use_openai_assistant = self.use_openai_assistant and os.getenv("OPENAI_API_KEY") is not None
             
             # Extract parameters if needed
             parameters = self._extract_parameters(message) if requires_devin_api else {}

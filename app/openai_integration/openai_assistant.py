@@ -26,17 +26,25 @@ class OpenAIAssistant:
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.assistant_id = assistant_id or os.getenv("OPENAI_ASSISTANT_ID")
         self.model = model or os.getenv("OPENAI_MODEL", "gpt-4-turbo")
+        self.is_available = False
         
         if not self.api_key:
             logger.warning("OpenAI API key not set. API calls will not work.")
             self.client = None
         else:
-            self.client = OpenAI(api_key=self.api_key)
-            
-            if not self.assistant_id and self.client:
-                self.assistant_id = self._create_default_assistant()
+            try:
+                self.client = OpenAI(api_key=self.api_key)
+                self.client.models.list()
+                self.is_available = True
+                
+                if not self.assistant_id and self.client:
+                    self.assistant_id = self._create_default_assistant()
+            except Exception as e:
+                logger.error(f"Error initializing OpenAI client: {e}")
+                self.client = None
+                self.is_available = False
         
-        logger.info("OpenAI Assistant client initialized")
+        logger.info(f"OpenAI Assistant client initialized. Available: {self.is_available}")
     
     def process_message(self, message: str, user_id: str, conversation_state: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -50,10 +58,10 @@ class OpenAIAssistant:
         Returns:
             Dict[str, Any]: Response including message and updated conversation state
         """
-        if not self.client or not self.assistant_id:
-            logger.warning("OpenAI Assistant not properly configured. Returning error message.")
+        if not self.is_available or not self.client or not self.assistant_id:
+            logger.warning("OpenAI Assistant not properly configured. Returning fallback message.")
             return {
-                "message": "OpenAI Assistantの設定が不完全です。管理者に連絡してください。",
+                "message": "申し訳ありませんが、現在OpenAI Assistantは利用できません。別の方法でお手伝いします。",
                 "conversation_state": conversation_state
             }
         
@@ -137,6 +145,9 @@ class OpenAIAssistant:
     
     def _create_default_assistant(self) -> Optional[str]:
         """Create a default assistant."""
+        if not self.is_available:
+            return None
+            
         try:
             assistant = self.client.beta.assistants.create(
                 name="テレグラムボット用アシスタント",
@@ -153,6 +164,9 @@ class OpenAIAssistant:
     
     def create_assistant(self, name: str, instructions: str, model: Optional[str] = None) -> Optional[str]:
         """Create a new assistant."""
+        if not self.is_available:
+            return None
+            
         try:
             assistant = self.client.beta.assistants.create(
                 name=name,
@@ -168,6 +182,9 @@ class OpenAIAssistant:
     
     def get_assistant(self, assistant_id: str) -> Dict[str, Any]:
         """Get assistant details."""
+        if not self.is_available:
+            return {}
+            
         try:
             assistant = self.client.beta.assistants.retrieve(assistant_id=assistant_id)
             return assistant.model_dump()
@@ -177,6 +194,9 @@ class OpenAIAssistant:
     
     def list_assistants(self) -> List[Dict[str, Any]]:
         """List all assistants."""
+        if not self.is_available:
+            return []
+            
         try:
             assistants = self.client.beta.assistants.list()
             return [a.model_dump() for a in assistants.data]
@@ -186,6 +206,9 @@ class OpenAIAssistant:
     
     def delete_assistant(self, assistant_id: str) -> bool:
         """Delete an assistant."""
+        if not self.is_available:
+            return False
+            
         try:
             self.client.beta.assistants.delete(assistant_id=assistant_id)
             return True
