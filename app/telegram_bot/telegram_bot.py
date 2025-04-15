@@ -130,6 +130,9 @@ class TelegramBot:
             return False
         
         try:
+            # Initialize the application
+            await self.application.initialize()
+            
             webhook_path = f"/webhook/{self.token}"
             webhook_url = f"{self.webhook_url.rstrip('/')}{webhook_path}"
             
