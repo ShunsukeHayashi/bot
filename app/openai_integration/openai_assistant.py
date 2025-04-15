@@ -66,12 +66,21 @@ class OpenAIAssistant:
         Returns:
             Dict[str, Any]: Response including message and updated conversation state
         """
-        if not self.is_available or not self.client or not self.assistant_id:
+        if not self.is_available or not self.client:
             logger.warning("OpenAI Assistant not properly configured. Returning fallback message.")
             return {
                 "message": "申し訳ありませんが、現在OpenAI Assistantは利用できません。別の方法でお手伝いします。",
                 "conversation_state": conversation_state
             }
+            
+        if not self.assistant_id:
+            self.assistant_id = self._create_default_assistant()
+            if not self.assistant_id:
+                logger.warning("Could not create default assistant. Returning fallback message.")
+                return {
+                    "message": "申し訳ありませんが、アシスタントの作成に失敗しました。別の方法でお手伝いします。",
+                    "conversation_state": conversation_state
+                }
         
         try:
             thread_id = conversation_state.get("openai_thread_id")

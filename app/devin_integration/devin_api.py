@@ -60,3 +60,12 @@ class DevinAPI:
         except Exception as e:
             logger.error(f"Error calling Devin API: {e}")
             return {"content": "An error occurred while trying to use the tool."}
+
+def get_devin_api() -> DevinAPI:
+    """
+    Get a Devin API client instance.
+    
+    Returns:
+        DevinAPI: A Devin API client instance
+    """
+    return DevinAPI()
