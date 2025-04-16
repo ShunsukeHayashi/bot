@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import Dict, Any, List, Optional, Protocol
+from typing import Dict, Any, List, Optional
 from linebot.v3.webhook import WebhookHandler
 from linebot.v3.messaging import MessagingApi, Configuration, ApiClient
 from linebot.v3.webhooks.models import MessageEvent, Event
@@ -10,26 +10,11 @@ from linebot.v3.messaging.models import (
     TextMessage, ReplyMessageRequest
 )
 
+from app.protocols.message_protocols import MessageHandlerProtocol, DatabaseClientProtocol
 from app.agent.agent_manager import get_agent_manager, AgentManager
 from app.database.supabase_client import get_supabase_client, SupabaseClient
 
 logger = logging.getLogger(__name__)
-
-class MessageHandler(Protocol):
-    """Protocol for message handling components."""
-    def process_message(self, message: str, user_id: str, conversation_state: Dict[str, Any]) -> Dict[str, Any]:
-        """Process a message and return a response."""
-        ...
-
-class DatabaseClient(Protocol):
-    """Protocol for database client components."""
-    def get_conversation_state(self, user_id: str) -> Dict[str, Any]:
-        """Get conversation state from the database."""
-        ...
-    
-    def store_conversation_state(self, user_id: str, conversation_data: Dict[str, Any]) -> bool:
-        """Store conversation state in the database."""
-        ...
 
 class LineBot:
     """
@@ -43,8 +28,8 @@ class LineBot:
         self, 
         channel_secret: Optional[str] = None, 
         channel_access_token: Optional[str] = None,
-        message_handler: Optional[MessageHandler] = None,
-        database_client: Optional[DatabaseClient] = None
+        message_handler: Optional[MessageHandlerProtocol] = None,
+        database_client: Optional[DatabaseClientProtocol] = None
     ):
         """
         Initialize the LINE bot.

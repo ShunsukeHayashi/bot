@@ -73,7 +73,7 @@ class IntentAnalyzer:
         
         self.devin_keywords = devin_keywords or [
             "code", "programming", "develop", "build", "create", "generate",
-            "analyze", "debug", "fix", "implement", "deploy", "automate"
+            "analyze", "debug", "fix", "implement", "deploy", "automate", "execute", "run", "gas", "script"
         ]
         
         self._compile_patterns()
@@ -186,7 +186,9 @@ class IntentAnalyzer:
             str: Tool name
         """
         # Determine the appropriate tool based on message content
-        if "code" in message or "programming" in message:
+        if "gas" in message or "script" in message or "execute" in message or "run" in message:
+            return "gas_executor"
+        elif "code" in message or "programming" in message:
             return "code_assistant"
         elif "analyze" in message:
             return "code_analyzer"
