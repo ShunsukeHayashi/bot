@@ -1,31 +1,16 @@
 import os
 import logging
 import json
-from typing import Dict, Any, List, Optional, Protocol
+from typing import Dict, Any, List, Optional
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler as TelegramMessageHandler, filters, ContextTypes, CallbackContext
 from telegram.ext.filters import MessageFilter
 
+from app.protocols.message_protocols import MessageHandlerProtocol, DatabaseClientProtocol
 from app.agent.agent_manager import get_agent_manager, AgentManager
 from app.database.supabase_client import get_supabase_client, SupabaseClient
 
 logger = logging.getLogger(__name__)
-
-class MessageHandlerProtocol(Protocol):
-    """Protocol for message handling components."""
-    def process_message(self, message: str, user_id: str, conversation_state: Dict[str, Any]) -> Dict[str, Any]:
-        """Process a message and return a response."""
-        ...
-
-class DatabaseClient(Protocol):
-    """Protocol for database client components."""
-    def get_conversation_state(self, user_id: str) -> Dict[str, Any]:
-        """Get conversation state from the database."""
-        ...
-    
-    def store_conversation_state(self, user_id: str, conversation_data: Dict[str, Any]) -> bool:
-        """Store conversation state in the database."""
-        ...
 
 class TelegramBot:
     """
@@ -40,7 +25,7 @@ class TelegramBot:
         token: Optional[str] = None,
         webhook_url: Optional[str] = None,
         message_handler: Optional[MessageHandlerProtocol] = None,
-        database_client: Optional[DatabaseClient] = None
+        database_client: Optional[DatabaseClientProtocol] = None
     ):
         """
         Initialize the Telegram bot.
